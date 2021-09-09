@@ -16,6 +16,12 @@ class Sphere2D : public atkui::Framework {
     double y = height() * 0.5;
     double radius = 100; 
     drawSphere(vec3(x,y,0), radius);
+
+    setColor(vec3(1,0,0));
+    double x2 = width() * 0.5;
+    double y2 = height() * 0.5;
+    double r2 = 150; 
+    drawSphere(vec3(x2,y2,-50), r2);
   }
 };
 
