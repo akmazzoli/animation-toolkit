@@ -40,7 +40,7 @@ public:
       for(int i = 0; i < 11; i++){
          for(int j = 0; j < 36; j++){
             if(i%2 == 0){
-            main   particles[j+(i*36)].px = particles[j+(i*36)].r * cos(theta+j*(10*3.14/180)) + 0.5 * width();
+               particles[j+(i*36)].px = particles[j+(i*36)].r * cos(theta+j*(10*3.14/180)) + 0.5 * width();
                particles[j+(i*36)].py = particles[j+(i*36)].r * sin(theta+j*(10*3.14/180)) + 0.5 * height();
             }else{
                particles[j+(i*36)].px = particles[j+(i*36)].r * cos(-theta+j*(10*3.14/180)) + 0.5 * width();
