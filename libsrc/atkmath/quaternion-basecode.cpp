@@ -13,10 +13,14 @@ Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, double 
 void Quaternion::toAxisAngle (Vector3& axis, double& angleRad) const
 {
 	angleRad = acos(mW)*2;
-	double x = mX/sin(angleRad/2);
-	double y = mY/sin(angleRad/2);
-	double z = mZ/sin(angleRad/2);
-	axis = Vector3(x,y,z);
+	if(sin(angleRad/2) == 0){
+		axis = Vector3(1,0,0);
+	}else{
+		double x = mX/sin(angleRad/2);
+		double y = mY/sin(angleRad/2);
+		double z = mZ/sin(angleRad/2);
+		axis = Vector3(x,y,z);
+	}
 }
 
 void Quaternion::fromAxisAngle (const Vector3& axis, double angleRad)
@@ -66,25 +70,25 @@ void Quaternion::fromMatrix(const Matrix3& rot)
 	double vz;
 	//use off diagonal terms depending on which is largest 
 	//w2 largest
-	if(w2 > x2 && w2 > y2 && w2 > z2){
+	if(w2 >= x2 && w2 >= y2 && w2 >= z2){
 		vw = sqrt(w2);
 		vz = (1/(4*vw))*(rot[1][0] - rot[0][1]);
 		vx = (1/(4*vw))*(rot[2][1] - rot[1][2]);
 		vy = (1/(4*vz))*(rot[2][1] + rot[1][2]);
 	//x2 largest
-	}else if(x2 > w2 && x2 > y2 && x2 > z2){
+	}else if(x2 >= w2 && x2 >= y2 && x2 >= z2){
 		vx = sqrt(x2);
 		vw = (1/(4*vx))*(rot[2][1] - rot[1][2]);
 		vy = (1/(4*vx))*(rot[1][0] + rot[0][1]);
 		vz = (1/(4*vw))*(rot[1][0] - rot[0][1]);
 	//y2 largest
-	}else if(y2 > w2 && y2 > x2 && y2 > z2){
+	}else if(y2 >= w2 && y2 >= x2 && y2 >= z2){
 		vy = sqrt(y2);
 		vx = (1/(4*vy))*(rot[1][0] + rot[0][1]);
 		vz = (1/(4*vy))*(rot[2][1] + rot[1][2]);
 		vw = (1/(4*vz))*(rot[1][0] - rot[0][1]);
 	//z2 largest
-	}else if(z2 > w2 && z2 > x2 && z2 > y2){
+	}else if(z2 >= w2 && z2 >= x2 && z2 >= y2){
 		vz = sqrt(z2);
 		vy = (1/(4*vz))*(rot[2][1] + rot[1][2]);
 		vw = (1/(4*vz))*(rot[1][0] - rot[0][1]);
