@@ -40,15 +40,15 @@ Matrix3 Quaternion::toMatrix () const
 	double vz = mZ;
 	double vw = mW;
 
-	double b11 = 1-2*(vy*vy + vz*vz);
-	double b12 = 2*(vx*vy - vw*vz);
-	double b13 = 2*(vx*vz + vw*vy);
-	double b21 = 2*(vx*vy + vw*vz);
-	double b22 = 1-2*(vx*vx + vz*vz);
-	double b23 = 2*(vy*vz - vw*vx);
-	double b31 = 2*(vx*vz - vw*vy);
-	double b32 = 2*(vy*vz + vw*vx);
-	double b33 = 1-2*(vx*vx + vy*vy);
+	double b11 = 1-2*(vy*vy + vz*vz); //
+	double b12 = 2*(vx*vy - vw*vz); //
+	double b13 = 2*(vx*vz + vw*vy); //
+	double b21 = 2*(vx*vy + vw*vz); //
+	double b22 = 1-2*(vx*vx + vz*vz); //
+	double b23 = 2*(vy*vz - vw*vx); //
+	double b31 = 2*(vx*vz - vw*vy); //
+	double b32 = 2*(vy*vz + vw*vx); //
+	double b33 = 1-2*(vx*vx + vy*vy); //
 
 	Matrix3 matrix = Matrix3(b11, b12, b13,
 							 b21, b22, b23,
@@ -59,40 +59,48 @@ Matrix3 Quaternion::toMatrix () const
 void Quaternion::fromMatrix(const Matrix3& rot)
 {
 	//get all variables squared
-	double w2 = (rot[0][0] + rot[1][1] + rot[2][2] + 1)/4;
-	double x2 = (1 + rot[0][0] - rot[1][1] - rot[2][2])/4;
-	double y2 = (1 - rot[0][0] + rot[1][1] - rot[2][2])/4;
-	double z2 = (1 - rot[0][0] - rot[1][1] + rot[2][2])/4;
+	float w2 = (rot[0][0] + rot[1][1] + rot[2][2] + 1)/4;
+	float x2 = (1 + rot[0][0] - rot[1][1] - rot[2][2])/4;
+	float y2 = (1 - rot[0][0] + rot[1][1] - rot[2][2])/4;
+	float z2 = (1 - rot[0][0] - rot[1][1] + rot[2][2])/4;
 
-	double vx;
-	double vy;
-	double vw;
-	double vz;
+	float vx;
+	float vy;
+	float vw;
+	float vz;
 	//use off diagonal terms depending on which is largest 
 	//w2 largest
 	if(w2 >= x2 && w2 >= y2 && w2 >= z2){
 		vw = sqrt(w2);
-		vz = (1/(4*vw))*(rot[1][0] - rot[0][1]);
-		vx = (1/(4*vw))*(rot[2][1] - rot[1][2]);
-		vy = (1/(4*vz))*(rot[2][1] + rot[1][2]);
+		vz = (1/(4*vw))*(rot[1][0] - rot[0][1]); //wz = 21 - 12
+		vx = (1/(4*vw))*(rot[2][1] - rot[1][2]); //wx = 32 - 23
+		vy = (1/(4*vw))*(rot[0][2] - rot[2][0]);
+		//vy = ((1/4)*(rot[0][2] - rot[2][0]))/vw; //yw = 13 - 31
 	//x2 largest
 	}else if(x2 >= w2 && x2 >= y2 && x2 >= z2){
 		vx = sqrt(x2);
-		vw = (1/(4*vx))*(rot[2][1] - rot[1][2]);
-		vy = (1/(4*vx))*(rot[1][0] + rot[0][1]);
-		vz = (1/(4*vw))*(rot[1][0] - rot[0][1]);
+		//vw = (1/(4*vx))*(rot[2][1] - rot[1][2]);
+		vw = ((1/4)*rot[2][1] - rot[1][2])/vx; // xw = 32 - 23 (FORMERLY 0 instead of 1)
+		//vy = (1/(4*vx))*(rot[1][0] + rot[0][1]);
+		vy = ((1/4)*rot[1][0] + rot[0][1])/vx; //xy = 21 + 12 (FORMERLY MINUS)
+		//vz = (1/(4*vw))*(rot[1][0] - rot[0][1]);
+		vz = ((1/4)*(rot[0][2] + rot[2][0]))/vx; //zx = 13 + 31
 	//y2 largest
 	}else if(y2 >= w2 && y2 >= x2 && y2 >= z2){
 		vy = sqrt(y2);
-		vx = (1/(4*vy))*(rot[1][0] + rot[0][1]);
-		vz = (1/(4*vy))*(rot[2][1] + rot[1][2]);
-		vw = (1/(4*vz))*(rot[1][0] - rot[0][1]);
+		vx = ((1/4)*rot[1][0] + rot[0][1])/vy; // yx = 21 + 12 (FORMERLY MINUS)
+		//vz = (1/(4*vy))*(rot[2][1] + rot[1][2]);
+		vz = ((1/4)*(rot[1][2] + rot[2][1]))/vy; //yz = 13 + 31
+		vw = ((1/4)*(rot[0][2] - rot[2][0]))/vy; //yw = 13 - 31
+		//vw = (1/(4*vz))*(rot[1][0] - rot[0][1]);
 	//z2 largest
 	}else if(z2 >= w2 && z2 >= x2 && z2 >= y2){
 		vz = sqrt(z2);
-		vy = (1/(4*vz))*(rot[2][1] + rot[1][2]);
-		vw = (1/(4*vz))*(rot[1][0] - rot[0][1]);
-		vx = (1/(4*vy))*(rot[1][0] + rot[0][1]);
+		//vy = (1/(4*vz))*(rot[2][1] + rot[1][2]);
+		vy = ((1/4)*(rot[1][2] + rot[2][1]))/vz; // yz = 23 + 32
+		vw = ((1/4)*(rot[1][0] - rot[0][1]))/vz; // zw = 21 - 12
+		//vx = (1/(4*vy))*(rot[1][0] + rot[0][1]);
+		vx = ((1/4)*(rot[0][2] + rot[2][0]))/vz; // zx = 13 + 31
 	}
 
 	*this = Quaternion(vx,vy,vz,vw);

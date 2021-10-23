@@ -67,7 +67,7 @@ class Unique : public atkui::Framework {
       // atkmath::Matrix3 qmat = quat.toMatrix();
       //glm::mat4 qglm = qmat.writeToMat4();
 
-      theta = theta * Rad2Deg;
+      //theta = theta * Rad2Deg;
       atkmath::Vector3 rotvec = atkmath::Vector3(0,0,theta);
       rotvec = rotvec*Rad2Deg;
 
