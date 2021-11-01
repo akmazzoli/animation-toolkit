@@ -5,10 +5,9 @@ The following image and gif show my slerp teapot:
 ![slerp](https://user-images.githubusercontent.com/64821062/139607486-6c4ba3a7-4cd5-4ea8-bda1-e23b856d3851.png)
 ![slerp](https://user-images.githubusercontent.com/64821062/139607542-a86051f4-08d5-4a16-bea7-811b44136a25.gif)
 
-The following image and gif show my boxes after transformation:
+The following image shows my boxes after transformation:
 
 ![boxes](https://user-images.githubusercontent.com/64821062/139607634-400668b2-adf8-423b-84f7-42ad418d3462.png)
-![boxes](https://user-images.githubusercontent.com/64821062/139607523-4207ebd7-30fb-4b96-990e-24132912daf4.png)
 
 The following images show my skeleton practice output:
 
