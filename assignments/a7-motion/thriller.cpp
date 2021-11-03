@@ -18,15 +18,21 @@ public:
       BVHReader reader;
       reader.load("../motions/Warrok/WarrokThriller.bvh", _skeleton, _motion);
 
-      vec3 position = vec3(0);
-      vec3 color = vec3(1,0,0);
-      float size = 1.0f;
-      _devil = Devil(position, color, size);
+      for(int i = 0; i < 12; i++){
+         //HOW DO I MAKE IT A 4x3 GRID?
+         vec3 position = vec3(i*50,0,i*50);
+         vec3 color = vec3(1,0,0);
+         float size = 1.0f;
+         _devil = Devil(position, color, size);
+         devils[i] = _devil;
+      }
    }
 
    virtual void scene() {
-      if (!_paused) _motion.update(_skeleton, elapsedTime());
-      _devil.draw(_skeleton, *this);
+      for(int i = 0; i < 12; i++){
+         if (!_paused) _motion.update(_skeleton, elapsedTime());
+         devils[i].draw(_skeleton, *this);
+      }
    }
 
    virtual void keyUp(int key, int mods) {
@@ -38,6 +44,8 @@ protected:
    Skeleton _skeleton;
    bool _paused = false;
    Devil _devil;
+   Devil devils [12];
+   
 };
 
 int main(int argc, char** argv) {

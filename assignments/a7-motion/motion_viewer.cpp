@@ -18,14 +18,16 @@ public:
    }
 
    void scene() {
-      time += dt();
-      motion.update(skeleton, time);
+      
+      if(paused == false){
+         time += dt();
+         motion.update(skeleton, time);
+      }
 
       setColor(vec3(0,0,0.8));
       for (int i = 0; i < skeleton.getNumJoints(); i++) {
          Joint* joint = skeleton.getByID(i);
          if (joint->getParent() == 0) continue;
-
          vec3 p1 = joint->getGlobalTranslation();
          vec3 p2 = joint->getParent()->getGlobalTranslation();
          drawEllipsoid(p1, p2, 5);
@@ -37,6 +39,22 @@ public:
    }
 
    virtual void keyUp(int key, int mods) {
+      if(key == 'P'){
+         paused = !paused;
+      }else if(key == '0'){
+         time = 0;
+      //DOES NOT WRAP JUST CORE DUMPS
+      }else if(key == '.' && paused == true){
+         time += dt();
+         motion.update(skeleton, time);
+      }else if(key == ',' && paused == true){
+         time -= dt();
+         motion.update(skeleton, time);
+      //HOW TO DO TIMESCALE?
+      }else if(key == ']'){
+         time = time*2;
+         timeScale += 1.0;
+      }
    }
 
 private:
