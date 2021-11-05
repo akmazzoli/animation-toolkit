@@ -18,13 +18,21 @@ public:
       BVHReader reader;
       reader.load("../motions/Warrok/WarrokThriller.bvh", _skeleton, _motion);
 
-      for(int i = 0; i < 12; i++){
-         //HOW DO I MAKE IT A 4x3 GRID?
-         vec3 position = vec3(i*50,0,i*50);
-         vec3 color = vec3(1,0,0);
-         float size = 1.0f;
-         _devil = Devil(position, color, size);
-         devils[i] = _devil;
+      int xPos = 0;
+      int zPos = 0;
+      int index = 0;
+      for(int i = 0; i < 4; i++){
+         xPos += 150;
+         zPos = 0;
+         for(int j = 0; j < 3; j++){
+            zPos += 150;
+            vec3 position = vec3(xPos,0,zPos);
+            vec3 color = vec3(1,0,0);
+            float size = 1.0f;
+            _devil = Devil(position, color, size);
+            devils[index] = _devil;
+            index++;
+         }
       }
    }
 

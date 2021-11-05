@@ -37,15 +37,15 @@ int main(int argc, char** argv)
    Joint* hand = skeleton.getByName("Beta:LeftHand");
    //std::cout << hand->getName();
    int handID = hand->getID();
-   vec3 eulerXYZ = vec3(0,0,0);
+   vec3 eulerXYZ = extractEulerAngleRO(hand->getRotationOrder(),mat3(frame5.jointRots[11]));
    std::cout << "The local rotation of the left hand on frame 5 is: " << glm::to_string(eulerXYZ) << std::endl;
 
    // What is the speed of the character?
    // Hint: Use the first and last frames to get the distance traveled over the motion clip
-   Pose frame0;
-   Pose frameN;
-   vec3 delta = vec3(0);
+   Pose frame0 = motion.getKey(0);
+   Pose frameN = motion.getKey(motion.getNumKeys()-1);
+   vec3 delta = frameN.rootPos - frame0.rootPos;
    float distance = delta.length();
-   float speed = 0.0;
+   float speed = distance/duration;
    std::cout << "The speed of the motion is (units/s): " << speed << std::endl;
 }

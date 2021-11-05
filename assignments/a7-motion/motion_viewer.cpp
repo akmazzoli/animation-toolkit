@@ -12,15 +12,24 @@ public:
    }
 
    void setup() {
+   }
+
+   void file(char* f){
       BVHReader reader;
-      reader.load("../motions/Beta/jump.bvh", skeleton, motion);
+      if(f == NULL || f == ""){
+         reader.load("../motions/Beta/jump.bvh", skeleton, motion);
+      }else{
+         std::string file;
+         file += f;
+          reader.load(file, skeleton, motion);
+      }
       motion.update(skeleton, 0);
    }
 
    void scene() {
       
       if(paused == false){
-         time += dt();
+         time += dt()*timeScale;
          motion.update(skeleton, time);
       }
 
@@ -43,17 +52,25 @@ public:
          paused = !paused;
       }else if(key == '0'){
          time = 0;
-      //DOES NOT WRAP JUST CORE DUMPS
       }else if(key == '.' && paused == true){
          time += dt();
+         if(time > motion.getNumKeys()){
+            time = 0;
+         }
          motion.update(skeleton, time);
       }else if(key == ',' && paused == true){
+         if(time < 0){
+            time = motion.getNumKeys();
+         }
          time -= dt();
          motion.update(skeleton, time);
-      //HOW TO DO TIMESCALE?
       }else if(key == ']'){
-         time = time*2;
-         timeScale += 1.0;
+         timeScale += 0.5;
+         if(timeScale == 0){
+            timeScale += 0.01;
+         }
+      }else if(key == '['){
+         timeScale = timeScale/2;
       }
    }
 
@@ -69,6 +86,8 @@ private:
 
 
 int main(int argc, char** argv) {
+   char* f = argv[1];
    MotionViewer viewer;
+   viewer.file(f);
    viewer.run();
 }
