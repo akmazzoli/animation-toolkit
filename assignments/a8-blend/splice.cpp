@@ -28,9 +28,40 @@ public:
    {
       Motion result;
       result.setFramerate(lower.getFramerate());
-      // todo: your code here
-      result.appendKey(lower.getKey(0));
+
+      for(int i = 0; i < lower.getNumKeys(); i++){
+            Pose lowerPose = lower.getKey(i);
+            Pose upperPose = upper.getKey(i+120);
+            Pose newUpper = upperPose;
+         for(int j = 0; j < _skeleton.getNumJoints(); j++){
+            Joint* joint = _skeleton.getByID(i);
+            bool upperBool = isUpper(joint);
+            if(upperBool == true){
+               newUpper.jointRots[j] = glm::slerp(upperPose.jointRots[j],lowerPose.jointRots[j],alpha);
+            }
+            result.appendKey(newUpper);
+         }
+      }
       return result;
+   }
+
+   bool isUpper(Joint* joint){
+      //return false;
+      Joint* parent;
+      if(joint->getName() == "Beta:Spine"){
+         return true;
+      }else if(joint->getName() == "Beta:Hips"){
+         return false;
+      }else{
+         parent = joint->getParent();
+         if(parent->getName() == "Beta:Spine"){
+            return true;
+         }else if(parent->getName() == "Beta:Hips"){
+            return false;
+         }else{
+            return isUpper(joint->getParent());
+         }
+      }
    }
 
    void scene()

@@ -26,9 +26,9 @@ public:
          zPos = 0;
          for(int j = 0; j < 3; j++){
             zPos += 150;
-            vec3 position = vec3(xPos,0,zPos);
-            vec3 color = vec3(1,0,0);
-            float size = 1.0f;
+            vec3 position = vec3(xPos+(rand()%50),0,zPos-(rand()%50));
+            vec3 color = agl::randomUnitVector();
+            float size = float(rand()%5);
             _devil = Devil(position, color, size);
             devils[index] = _devil;
             index++;

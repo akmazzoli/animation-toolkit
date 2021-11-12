@@ -29,8 +29,16 @@ public:
       Motion blend;
       blend.setFramerate(m1.getFramerate());
 
+      float duration = m1.getDuration()*(1-alpha)+m2.getDuration()*alpha;
+      float deltaT = 1/blend.getFramerate();
+      for(float i = 0; i < duration; i += deltaT){
+          Pose pose1 = m1.getValue(i);
+          Pose pose2 = m2.getValue(i);
+          Pose newPose = Pose::Lerp(pose1,pose2,float(alpha));
+          blend.appendKey(newPose);
+      }
       // todo: replace the following line with your code
-      blend.appendKey(m1.getKey(0)); // placeholder
+      blend.appendKey(m1.getKey(0)); 
       return blend;
    }
 

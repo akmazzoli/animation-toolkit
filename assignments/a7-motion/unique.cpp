@@ -21,7 +21,7 @@ public:
       time += dt();
       motion.update(skeleton, time);
 
-      setColor(vec3(0,0,0.8));
+      setColor(vec3(0,1,0));
       for (int i = 0; i < skeleton.getNumJoints(); i++) {
          Joint* joint = skeleton.getByID(i);
          if (joint->getParent() == 0) continue;
