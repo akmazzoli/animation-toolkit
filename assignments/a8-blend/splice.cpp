@@ -33,14 +33,14 @@ public:
             Pose lowerPose = lower.getKey(i);
             Pose upperPose = upper.getKey(i+120);
             Pose newUpper = upperPose;
-         for(int j = 0; j < _skeleton.getNumJoints(); j++){
+         //for(int j = 0; j < _skeleton.getNumJoints(); j++){
             Joint* joint = _skeleton.getByID(i);
             bool upperBool = isUpper(joint);
             if(upperBool == true){
-               newUpper.jointRots[j] = glm::slerp(upperPose.jointRots[j],lowerPose.jointRots[j],alpha);
+               newUpper.jointRots[i] = glm::slerp(upperPose.jointRots[i],lowerPose.jointRots[i],alpha);
             }
             result.appendKey(newUpper);
-         }
+         //}
       }
       return result;
    }
