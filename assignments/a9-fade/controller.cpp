@@ -41,14 +41,29 @@ public:
 
   virtual void update()
   {
+    vec3 start = _walk.getValue(0).rootPos;
+    vec3 globalPos;
+    vec3 globalLookPos;
+    for(int i = 0; i < _walk.getNumKeys(); i++){
+      Pose pinned = _walk.getValue(i);
+      Joint* root = _skeleton.getByName("Beta:Hips");
+      pinned.jointRots[root->getID()] = eulerAngleRO(XYZ,vec3(0,_heading,0));
+      //pinned.rootPos = start;
+      pinned.rootPos = _skeleton.getRoot()->getGlobalTranslation() + float(100)*vec3(0,0,_heading) * dt();
+      _walk.editKey(i,pinned);
+
+      Joint* head = _skeleton.getByName("Beta:Head");
+      vec3 headPosGlobal = head->getGlobalTranslation();
+      vec3 offset = _skeleton.getByName("Beta:Head")->getLocal2Global().transformVector(glm::vec3(0,0,-300));
+      globalPos = headPosGlobal + offset;
+      globalLookPos = root->getGlobalTranslation();
+      lookAt(globalPos,globalLookPos,vec3(0,1,0) /*up*/);
+    }
+
+    lookAt(globalPos,globalLookPos,vec3(0,1,0) /*up*/);
+
     _walk.update(_skeleton, elapsedTime());
 
-    // TODO: Your code here
-
-    // TODO: Override the default camera to follow the character
-    // lookAt(pos, look, vec3(0, 1, 0));
-
-    // update heading when key is down
     if (keyIsDown('D')) _heading -= 0.05;
     if (keyIsDown('A')) _heading += 0.05;
   }

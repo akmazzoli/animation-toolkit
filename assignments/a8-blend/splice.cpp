@@ -39,7 +39,7 @@ public:
             if(upperBool == true){
                newUpper.jointRots[i] = glm::slerp(upperPose.jointRots[i],lowerPose.jointRots[i],alpha);
             }
-            result.appendKey(newUpper);
+            result.appendKey(upperPose);
          //}
       }
       return result;
