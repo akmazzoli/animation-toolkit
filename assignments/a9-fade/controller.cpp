@@ -60,8 +60,6 @@ public:
       lookAt(globalPos,globalLookPos,vec3(0,1,0) /*up*/);
     }
 
-    lookAt(globalPos,globalLookPos,vec3(0,1,0) /*up*/);
-
     _walk.update(_skeleton, elapsedTime());
 
     if (keyIsDown('D')) _heading -= 0.05;

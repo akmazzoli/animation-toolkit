@@ -126,7 +126,37 @@ class AIKSimple : public atkui::Framework
 
   void solveIKTwoLink(Skeleton &skeleton, const vec3 &goalPosition)
   {
-    // todo: implement two link IK algorithm
+    //place skeleton's end effector at goalPos 
+    //joint 0 is root
+    //joint 1 is middle 
+    //joint 2 is end effector 
+    vec3 gp = vec3(100,0,0);
+    Joint* root = skeleton.getByID(0);
+    Joint* middle = skeleton.getByID(1);
+    Joint* effector = skeleton.getByID(2);
+    //we know distance btwn goal pd and p1 
+    //adjust rotation of p2 so length matches 
+    //we want ||p03 - p01|| = ||p0d - p01||   
+
+    //r = ||pd - p01||
+    vec3 rv = goalPosition - root->getGlobalTranslation();
+    float r = sqrt((rv.x)*(rv.x) + (rv.y)*(rv.y) + (rv.z)*(rv.z));
+
+    vec3 l1v = middle->getGlobalTranslation()-root->getGlobalTranslation();
+    float l1 = sqrt((l1v.x)*(l1v.x) + (l1v.y)*(l1v.y) + (l1v.z)*(l1v.z));
+
+    vec3 l2v = effector->getGlobalTranslation()-middle->getGlobalTranslation();
+    float l2 = sqrt((l2v.x)*(l2v.x) + (l2v.y)*(l2v.y) + (l2v.z)*(l2v.z));
+
+    float ctheta = ((r*r) - (l1*l1) - (l2*l2))/(-2.0*l1*l2);
+
+    float theta = acos(ctheta);
+    //std::cout<<theta;
+   
+    float theta2z = theta - 180;
+
+    float stheta1z = -(l2*sin(theta))/r;
+    float theta1z = asin(stheta1z);    
   }
 
  private:
