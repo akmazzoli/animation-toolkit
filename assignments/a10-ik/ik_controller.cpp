@@ -51,7 +51,7 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
 
   vec3 p = skeleton.getByID(jointid)->getGlobalTranslation();
   vec3 tc = goalPos - p; 
-  float tc2 = sqrt(tc.x*tc.x + tc.y*tc.y + tc.z*tc.z);
+  float tc2 = glm::length(tc);
   int iterations = 0;
   while(tc2 > threshold && iterations < maxIters){
     for(int i = 0; i < chain.size(); i++){
@@ -60,21 +60,14 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
       vec3 e = goalPos - joint->getGlobalTranslation();
       //end effector - chain[0]?
       vec3 rCe = glm::cross(r,e);
-      float mag = sqrt(rCe.x*rCe.x + rCe.y*rCe.y + rCe.z*rCe.z);
+      float mag = glm::length(rCe);
       float deltaPhi = nudgeFactor*atan2(mag,glm::dot(r,r)+glm::dot(r,e));
       vec3 axis = glm::cross(r,e)/mag;
       quat nudge = angleAxis(deltaPhi,axis);
       joint->setLocalRotation(joint->getLocalRotation()*nudge);
-      //NUDGE??? 
-      //UPDATE P???
     }
+    iterations++;
+    skeleton.fk();
   }
-
-  // for(int i = 0; i < chain.length(); i++){
-  //   vec3 r = chain[i]->getGlobalTranslation()-(chain[i]->getParent())->getGlobalTranslation();
-  //   vec3 e = target - chain[i]->getGlobalTranslation();
-  // }
-
-  // TODO: Your code here
   return false;
 }

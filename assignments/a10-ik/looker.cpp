@@ -77,6 +77,7 @@ public:
       drawLine(globalHeadPos, globalHeadPos + 200.0f*globalForward);
       drawSphere(_target, 5);
    }
+   
 
    Cyclops _drawer;
    Skeleton _skeleton;
