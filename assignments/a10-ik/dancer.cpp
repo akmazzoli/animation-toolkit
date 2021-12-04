@@ -20,14 +20,35 @@ public:
       BVHReader reader;
       reader.load("../motions/Beta/idle.bvh", _skeleton, _motion);
       _drawer.color = vec3(1,0,0);
+      // _lhandTarget = _skeleton.getByName("Beta:LeftHand")->getGlobalTranslation();
+      // _rhandTarget = _skeleton.getByName("Beta:RightHand")->getGlobalTranslation();
+      thetaRate = 2.0;
    }
 
    void update()
    {
+      theta += thetaRate*dt();
       _motion.update(_skeleton, elapsedTime());
 
-      IKController ik;
-      // TODO: Your code here
+      _lhandTarget = vec3(50,35.0*sin(theta) +110.0,0);
+      _rhandTarget = vec3(-50,35.0*sin(theta) +110.0,0);
+
+       IKController ik;
+       int jointIDR = _skeleton.getByName("Beta:RightHand")->getID();
+       int jointIDL = _skeleton.getByName("Beta:LeftHand")->getID();
+
+       std::vector<Joint*> rchain;
+      rchain.push_back(_skeleton.getByName("Beta:RightHand"));
+      rchain.push_back(_skeleton.getByName("Beta:RightElbow"));
+      rchain.push_back(_skeleton.getByName("Beta:RightShoulder"));
+      std::vector<Joint*> lchain;
+      lchain.push_back(_skeleton.getByName("Beta:LeftHand"));
+      lchain.push_back(_skeleton.getByName("Beta:LeftElbow"));
+      lchain.push_back(_skeleton.getByName("Beta:LeftShoulder"));
+
+
+       //ik.solveIKCCD(_skeleton, jointIDR, _rhandTarget, rchain, 0.2, 10, 1);
+       //ik.solveIKCCD(_skeleton, jointIDL, _lhandTarget, lchain, 0.01, 300, 1);
 
    }
 
@@ -36,8 +57,8 @@ public:
       update();
       _drawer.draw(_skeleton, *this);
       setColor(vec3(0,0,1));
-      drawSphere(_lhandTarget, 10);
-      drawSphere(_rhandTarget, 10);
+      drawSphere(_lhandTarget, 20);
+      drawSphere(_rhandTarget, 20);
    }
 
 protected:
@@ -48,6 +69,8 @@ protected:
    // Hand target positions
    vec3 _lhandTarget;
    vec3 _rhandTarget;
+   float theta;
+   float thetaRate;
 };
 
 int main(int argc, char** argv)

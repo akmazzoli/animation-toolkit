@@ -31,8 +31,8 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
   //skeleton - character to modify
   //jointid - id of end effector 
   //goalpos - target position for jointid
-  
-  //use angle/axis ccd computation to solve for grandparent joint rotation
+
+  //use the law of cosines to solve for the parent joint rotation
   vec3 d1 = knee->getGlobalTranslation() - hip->getGlobalTranslation();
   float l1 = length(d1);
   vec3 d2 = ankle->getGlobalTranslation() - knee->getGlobalTranslation();
@@ -41,7 +41,7 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
   float r = length(rVec);
   float cosPhi = (r*r - l1*l1 - l2*l2)/(-2*l1*l2);
   float phi = acos(cosPhi);
-  float theta2z = phi - 180.0;
+  float theta2z = phi - M_PI;
 
   vec3 limbDir = normalize(knee->getLocalTranslation());
   vec3 axis = cross(limbDir, vec3(0,0,-1));
@@ -51,18 +51,34 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
 
   quat rot = angleAxis(theta2z,inverse(knee->getGlobalRotation())*axis);
   knee->setLocalRotation(knee->getLocalRotation()*rot);
+  knee->fk();
 
-  float sinTheta1z = (-l2*sin(theta2z))/r;
-  float theta1z = asin(sinTheta1z);
+  //use angle/axis ccd computation to solve for grandparent joint rotation
+  vec3 e = goalPos - ankle->getGlobalTranslation();
+  vec3 rCe = glm::cross(rVec,e);
+  float mag = length(rCe);
+  float deltaPhi = 1.0;
+  if(mag < 0.0001){
+    //deltaPhi = 30.0;
+    axis = vec3(0,0,1);
+  }
+  //if rce is close to 0, skip 
+  //if(mag > 0.0001){
+  deltaPhi = atan2(mag,(glm::dot(rVec,rVec)+glm::dot(rVec,e)));
+  //}
+  axis = glm::cross(rVec,e)/mag;
+  quat nudge = angleAxis(deltaPhi,inverse(hip->getGlobalRotation())*axis);
+  //same as looker on slack
+  hip->setLocalRotation(nudge*hip->getLocalRotation());
+  hip->fk();
 
-  quat rot2 = angleAxis(theta1z,inverse(hip->getGlobalRotation())*vec3(0,0,1));
-  hip->setLocalRotation(hip->getLocalRotation()*rot2);
+  // float sinTheta1z = (-l2*sin(theta2z))/r;
+  // float theta1z = asin(sinTheta1z);
 
-  //use the law of cosines to solve for the parent joint rotation
+  // quat rot2 = angleAxis(theta1z,inverse(hip->getGlobalRotation())*vec3(0,0,1));
+  // hip->setLocalRotation(hip->getLocalRotation()*rot2);
 
   ankle->fk();
-  knee->fk();
-  hip->fk();
 
   return true;
 }
@@ -94,6 +110,7 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
     for(int i = 1; i < chain.size(); i++){
       Joint* joint = chain[i];
       Joint* end = chain[0];
+
       vec3 r = end->getGlobalTranslation() - joint->getGlobalTranslation();
       //goal minus end effector global 
       vec3 e = goalPos - end->getGlobalTranslation();
@@ -101,17 +118,18 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
       if(length(e) < 0.0001){
         continue;
       }
+
       vec3 rCe = glm::cross(r,e);
       float mag = length(rCe);
       if(mag < 0.0001){
         continue;
       }
       //if rce is close to 0, skip 
-      float deltaPhi = nudgeFactor*atan2(mag,(glm::dot(r,r)+glm::dot(r,e)));
+      float deltaPhi = atan2(mag,(glm::dot(r,e)+glm::dot(r,r)))*nudgeFactor;
       vec3 axis = glm::cross(r,e)/mag;
       quat nudge = angleAxis(deltaPhi,inverse(joint->getParent()->getGlobalRotation())*axis);
       //same as looker on slack
-      joint->setLocalRotation(joint->getLocalRotation()*nudge);
+      joint->setLocalRotation(nudge*joint->getLocalRotation());
       joint->fk();
     }
     p = skeleton.getByID(jointid)->getGlobalTranslation();
