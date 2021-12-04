@@ -34,30 +34,16 @@ public:
 
    void lookAtTarget(Joint* head, const vec3& target) {
 
-      vec3 xvec = target - head->getGlobalTranslation();
-      xvec = glm::normalize(xvec);
-      vec3 zvec = glm::cross(xvec,vec3(0,1,0));
+      vec3 zvec = target - head->getGlobalTranslation();
+      vec3 xvec = glm::cross(vec3(0,1,0),zvec);
       vec3 yvec = glm::cross(zvec,xvec);
       zvec = glm::normalize(zvec);
+      xvec = glm::normalize(xvec);
       yvec = glm::normalize(yvec);
-      // Matrix3::Matrix3 mat;
-      // mat.m11() = xvec.x;
-      // mat.m21() = xvec.y;
-      // mat.m31() = xvec.z;
-      // mat.m12() = yvec.x;
-      // mat.m22() = yvec.y;
-      // mat.m32() = yvec.z;
-      // mat.m13() = zvec.x;
-      // mat.m23() = zvec.y;
-      // mat.m33() = zvec.z;
+      glm::mat3 mat = glm::mat3(xvec, yvec, zvec);
 
-      // Quaternion quat = mat.toQuaternion();
-      // glm::Quat quat2 = quat;
-
-      //head->setLocalRotation(quat2);
-      //_skeleton.jointRots[head->getID()] = mat;
-      //convert to local
-      
+      quat q = quat(mat);
+      head->setLocalRotation(inverse(head->getParent()->getGlobalRotation())*q*head->getLocalRotation());      
       head->fk();
    }
 
