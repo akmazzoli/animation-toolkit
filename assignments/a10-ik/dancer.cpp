@@ -37,19 +37,19 @@ public:
        int jointIDR = _skeleton.getByName("Beta:RightHand")->getID();
        int jointIDL = _skeleton.getByName("Beta:LeftHand")->getID();
 
-       std::vector<Joint*> rchain;
+      vector<Joint*> rchain;
       rchain.push_back(_skeleton.getByName("Beta:RightHand"));
-      rchain.push_back(_skeleton.getByName("Beta:RightElbow"));
+      rchain.push_back(_skeleton.getByName("Beta:RightArm"));
       rchain.push_back(_skeleton.getByName("Beta:RightShoulder"));
-      std::vector<Joint*> lchain;
+      vector<Joint*> lchain;
       lchain.push_back(_skeleton.getByName("Beta:LeftHand"));
-      lchain.push_back(_skeleton.getByName("Beta:LeftElbow"));
+      lchain.push_back(_skeleton.getByName("Beta:LeftArm"));
       lchain.push_back(_skeleton.getByName("Beta:LeftShoulder"));
 
 
-       //ik.solveIKCCD(_skeleton, jointIDR, _rhandTarget, rchain, 0.2, 10, 1);
-       //ik.solveIKCCD(_skeleton, jointIDL, _lhandTarget, lchain, 0.01, 300, 1);
-
+      ik.solveIKCCD(_skeleton, jointIDR, _rhandTarget, rchain, 0.00001, 8, 0.1);
+      ik.solveIKCCD(_skeleton, jointIDL, _lhandTarget, lchain, 0.00001, 8, 0.1);
+      _skeleton.fk();
    }
 
    void scene()
