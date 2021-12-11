@@ -32,6 +32,7 @@ ASeek::ASeek() : ABehavior("Seek")
 vec3 ASeek::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& target)
 {
+   //speed maxSpeed 
    return vec3(0,0,0);
 }
 
