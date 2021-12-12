@@ -15,11 +15,32 @@ float ASteerable::kOriKp = 150.0;
 // translation control: f = m * Kv0 * (vd - v)
 void ASteerable::senseControlAct(const vec3& veld, float dt)
 {
+   //Z IS FORWARD ROTATE AROUND Y 
    // Compute _vd and _thetad
+   _vd = length(veld);
+   _thetad = atan2(veld.x,veld.z);
 
-   // compute _force and _torque
+   // compute _force and _torque - torque to spin it, linear forces to push and pull it 
+   _force = _mass*kVelKv*(_vd-_state[2]);
+   float a = _thetad-_state[1];
+   if(a < -180.0f){
+      a = a + 360.0f;
+   }
+   if(a > 180.0f){
+      a = a - 360.0f;
+   }
+   _torque = _inertia*(kOriKp*(a) - kVelKv*_state[3]);
 
-   // find derivative
+   // find derivative - [v, f/ma] - f is all forces - ma 
+   _derivative[0] = _state[2];
+   _derivative[1] = _state[3];
+   _derivative[2] = (float)_force/_mass;
+   _derivative[3] = (float)_torque/_inertia;
+
+   _state[0] = _derivative[0]*dt;
+   _state[1] = _derivative[1]*dt;
+   _state[2] = _derivative[2]*dt;
+   _state[3] = _derivative[3]*dt;
 
    // update state
 
